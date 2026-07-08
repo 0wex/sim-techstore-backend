@@ -15,12 +15,27 @@
       "bearerAuth": []
     }
   ],
+  "tags": [
+    {
+      "name": "Usuario — Wishlist y Carrito",
+      "description": "Endpoints protegidos: requieren el header Authorization: Bearer <token>. Sin token devuelven 403."
+    },
+    {
+      "name": "Autenticación",
+      "description": "Registro e inicio de sesión. Ambos devuelven un token JWT."
+    },
+    {
+      "name": "Productos",
+      "description": "Catálogo público: búsqueda con filtros y detalle por ID."
+    }
+  ],
   "paths": {
     "/api/user/wishlist": {
       "post": {
         "tags": [
-          "user-controller"
+          "Usuario — Wishlist y Carrito"
         ],
+        "summary": "Agregar producto a la wishlist",
         "operationId": "addWishlist",
         "requestBody": {
           "content": {
@@ -33,15 +48,26 @@
           "required": true
         },
         "responses": {
+          "400": {
+            "description": "El producto no existe",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "200": {
-            "description": "OK"
+            "description": "Agregado (sin cuerpo)"
           }
         }
       },
       "delete": {
         "tags": [
-          "user-controller"
+          "Usuario — Wishlist y Carrito"
         ],
+        "summary": "Remover producto de la wishlist",
         "operationId": "removeWishlist",
         "requestBody": {
           "content": {
@@ -55,7 +81,7 @@
         },
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Removido (sin cuerpo)"
           }
         }
       }
@@ -63,8 +89,10 @@
     "/api/user/cart": {
       "post": {
         "tags": [
-          "user-controller"
+          "Usuario — Wishlist y Carrito"
         ],
+        "summary": "Agregar producto al carrito",
+        "description": "Si el producto ya está en el carrito, actualiza la cantidad (upsert).",
         "operationId": "addToCart",
         "requestBody": {
           "content": {
@@ -78,14 +106,25 @@
         },
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Agregado o actualizado (sin cuerpo)"
+          },
+          "400": {
+            "description": "Cantidad menor a 1 o producto inexistente",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         }
       },
       "delete": {
         "tags": [
-          "user-controller"
+          "Usuario — Wishlist y Carrito"
         ],
+        "summary": "Remover producto del carrito",
         "operationId": "removeFromCart",
         "requestBody": {
           "content": {
@@ -99,7 +138,7 @@
         },
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Removido (sin cuerpo)"
           }
         }
       }
@@ -107,8 +146,10 @@
     "/api/auth/register": {
       "post": {
         "tags": [
-          "auth-controller"
+          "Autenticación"
         ],
+        "summary": "Registrar usuario",
+        "description": "Crea una cuenta nueva y devuelve un token JWT listo para usar.",
         "operationId": "register",
         "requestBody": {
           "content": {
@@ -122,14 +163,21 @@
         },
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "Usuario registrado",
             "content": {
               "*/*": {
                 "schema": {
-                  "type": "object",
-                  "additionalProperties": {
-                    "type": "string"
-                  }
+                  "$ref": "#/components/schemas/TokenResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Correo ya registrado o campos inválidos",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -140,8 +188,10 @@
     "/api/auth/login": {
       "post": {
         "tags": [
-          "auth-controller"
+          "Autenticación"
         ],
+        "summary": "Iniciar sesión",
+        "description": "Valida las credenciales y devuelve un token JWT.",
         "operationId": "login",
         "requestBody": {
           "content": {
@@ -155,14 +205,21 @@
         },
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "Login exitoso",
             "content": {
               "*/*": {
                 "schema": {
-                  "type": "object",
-                  "additionalProperties": {
-                    "type": "string"
-                  }
+                  "$ref": "#/components/schemas/TokenResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Credenciales inválidas",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -173,23 +230,36 @@
     "/api/products/{id}": {
       "get": {
         "tags": [
-          "product-controller"
+          "Productos"
         ],
+        "summary": "Detalle de un producto",
         "operationId": "getById",
         "parameters": [
           {
             "name": "id",
             "in": "path",
+            "description": "ID del producto",
             "required": true,
             "schema": {
               "type": "integer",
               "format": "int64"
-            }
+            },
+            "example": 1
           }
         ],
         "responses": {
+          "400": {
+            "description": "El producto no existe",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "200": {
-            "description": "OK",
+            "description": "Producto encontrado",
             "content": {
               "*/*": {
                 "schema": {
@@ -204,48 +274,58 @@
     "/api/products/search": {
       "get": {
         "tags": [
-          "product-controller"
+          "Productos"
         ],
+        "summary": "Buscar productos con filtros",
+        "description": "Todos los filtros son opcionales y combinables. Sin parámetros devuelve los 20 productos.",
         "operationId": "search",
         "parameters": [
           {
             "name": "name",
             "in": "query",
+            "description": "Busca por nombre (contiene, sin distinguir mayúsculas)",
             "required": false,
             "schema": {
               "type": "string"
-            }
+            },
+            "example": "pro"
           },
           {
             "name": "brand",
             "in": "query",
+            "description": "Busca por marca (contiene, sin distinguir mayúsculas)",
             "required": false,
             "schema": {
               "type": "string"
-            }
+            },
+            "example": "Apple"
           },
           {
             "name": "minPrice",
             "in": "query",
+            "description": "Precio mínimo (inclusive)",
             "required": false,
             "schema": {
               "type": "number",
               "format": "double"
-            }
+            },
+            "example": 1000
           },
           {
             "name": "maxPrice",
             "in": "query",
+            "description": "Precio máximo (inclusive)",
             "required": false,
             "schema": {
               "type": "number",
               "format": "double"
-            }
+            },
+            "example": 6000
           }
         ],
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "Lista de productos que cumplen los filtros",
             "content": {
               "*/*": {
                 "schema": {
@@ -268,23 +348,39 @@
         "properties": {
           "productId": {
             "type": "integer",
-            "format": "int64"
+            "format": "int64",
+            "description": "ID del producto",
+            "example": 1
           }
         },
         "required": [
           "productId"
         ]
       },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "description": "Mensaje de error legible",
+            "example": "Product not found: 99"
+          }
+        }
+      },
       "CartRequest": {
         "type": "object",
         "properties": {
           "productId": {
             "type": "integer",
-            "format": "int64"
+            "format": "int64",
+            "description": "ID del producto",
+            "example": 1
           },
           "quantity": {
             "type": "integer",
-            "format": "int32"
+            "format": "int32",
+            "description": "Cantidad deseada (mínimo 1)",
+            "example": 2
           }
         },
         "required": [
@@ -296,13 +392,19 @@
         "type": "object",
         "properties": {
           "email": {
-            "type": "string"
+            "type": "string",
+            "description": "Correo electrónico válido",
+            "example": "estudiante@utec.edu.pe"
           },
           "password": {
-            "type": "string"
+            "type": "string",
+            "description": "Contraseña del usuario",
+            "example": "miPassword123"
           },
           "name": {
-            "type": "string"
+            "type": "string",
+            "description": "Nombre completo del usuario",
+            "example": "Juan Pérez"
           }
         },
         "required": [
@@ -311,14 +413,28 @@
           "password"
         ]
       },
+      "TokenResponse": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "description": "Token JWT. Enviarlo en el header Authorization: Bearer <token>",
+            "example": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJlc3R1ZGlhbnRlQHV0ZWMuZWR1LnBlIn0.abc123"
+          }
+        }
+      },
       "LoginRequest": {
         "type": "object",
         "properties": {
           "email": {
-            "type": "string"
+            "type": "string",
+            "description": "Correo registrado",
+            "example": "estudiante@utec.edu.pe"
           },
           "password": {
-            "type": "string"
+            "type": "string",
+            "description": "Contraseña del usuario",
+            "example": "miPassword123"
           }
         },
         "required": [
@@ -331,23 +447,35 @@
         "properties": {
           "id": {
             "type": "integer",
-            "format": "int64"
+            "format": "int64",
+            "description": "Identificador único del producto",
+            "example": 1
           },
           "name": {
-            "type": "string"
+            "type": "string",
+            "description": "Nombre del producto",
+            "example": "iPhone 15 Pro"
           },
           "brand": {
-            "type": "string"
+            "type": "string",
+            "description": "Marca del producto",
+            "example": "Apple"
           },
           "price": {
             "type": "number",
-            "format": "double"
+            "format": "double",
+            "description": "Precio en soles (S/)",
+            "example": 5499.0
           },
           "category": {
-            "type": "string"
+            "type": "string",
+            "description": "Categoría del producto",
+            "example": "Smartphones"
           },
           "imageUrl": {
-            "type": "string"
+            "type": "string",
+            "description": "URL de la imagen del producto",
+            "example": "https://via.placeholder.com/150"
           }
         }
       }
