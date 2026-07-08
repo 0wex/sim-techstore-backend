@@ -43,9 +43,6 @@
           "required": true
         },
         "responses": {
-          "200": {
-            "description": "Agregado (sin cuerpo)"
-          },
           "400": {
             "description": "El producto no existe",
             "content": {
@@ -58,6 +55,9 @@
                 }
               }
             }
+          },
+          "200": {
+            "description": "Agregado (sin cuerpo)"
           },
           "403": {
             "description": "Sin token o token inválido"
@@ -86,11 +86,11 @@
           "required": true
         },
         "responses": {
-          "200": {
-            "description": "Removido (sin cuerpo)"
-          },
           "403": {
             "description": "Sin token o token inválido"
+          },
+          "200": {
+            "description": "Removido (sin cuerpo)"
           }
         },
         "security": [
@@ -119,9 +119,6 @@
           "required": true
         },
         "responses": {
-          "200": {
-            "description": "Agregado o actualizado (sin cuerpo)"
-          },
           "400": {
             "description": "Cantidad menor a 1 o producto inexistente",
             "content": {
@@ -134,6 +131,9 @@
                 }
               }
             }
+          },
+          "200": {
+            "description": "Agregado o actualizado (sin cuerpo)"
           },
           "403": {
             "description": "Sin token o token inválido"
@@ -162,11 +162,11 @@
           "required": true
         },
         "responses": {
-          "200": {
-            "description": "Removido (sin cuerpo)"
-          },
           "403": {
             "description": "Sin token o token inválido"
+          },
+          "200": {
+            "description": "Removido (sin cuerpo)"
           }
         },
         "security": [
@@ -240,6 +240,16 @@
           "required": true
         },
         "responses": {
+          "200": {
+            "description": "Login exitoso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokenResponse"
+                }
+              }
+            }
+          },
           "400": {
             "description": "Credenciales inválidas",
             "content": {
@@ -249,16 +259,6 @@
                 },
                 "example": {
                   "error": "Invalid credentials"
-                }
-              }
-            }
-          },
-          "200": {
-            "description": "Login exitoso",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/TokenResponse"
                 }
               }
             }
@@ -287,16 +287,6 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "Producto encontrado",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProductResponse"
-                }
-              }
-            }
-          },
           "400": {
             "description": "El producto no existe",
             "content": {
@@ -306,6 +296,16 @@
                 },
                 "example": {
                   "error": "Product not found: 99"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Producto encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductResponse"
                 }
               }
             }
@@ -516,7 +516,7 @@
           "imageUrl": {
             "type": "string",
             "description": "URL de la imagen del producto",
-            "example": "https://via.placeholder.com/150"
+            "example": "https://placehold.co/150"
           }
         }
       }
