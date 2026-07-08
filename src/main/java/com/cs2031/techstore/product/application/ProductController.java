@@ -32,7 +32,7 @@ public class ProductController {
             @Schema(description = "Marca del producto", example = "Apple") String brand,
             @Schema(description = "Precio en soles (S/)", example = "5499.0") Double price,
             @Schema(description = "Categoría del producto", example = "Smartphones") String category,
-            @Schema(description = "URL de la imagen del producto", example = "https://placehold.co/150") String imageUrl) {}
+            @Schema(description = "URL de la imagen del producto", example = "https://placehold.co/150?text=Imagen+de+iPhone+15+Pro") String imageUrl) {}
 
     @Operation(summary = "Buscar productos con filtros",
             description = "Todos los filtros son opcionales y combinables. Sin parámetros devuelve los 20 productos.")
