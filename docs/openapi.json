@@ -10,11 +10,6 @@
       "url": "http://localhost:8080"
     }
   ],
-  "security": [
-    {
-      "bearerAuth": []
-    }
-  ],
   "tags": [
     {
       "name": "Usuario — Wishlist y Carrito",
@@ -48,20 +43,31 @@
           "required": true
         },
         "responses": {
+          "200": {
+            "description": "Agregado (sin cuerpo)"
+          },
           "400": {
             "description": "El producto no existe",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "error": "Product not found: 99"
                 }
               }
             }
           },
-          "200": {
-            "description": "Agregado (sin cuerpo)"
+          "403": {
+            "description": "Sin token o token inválido"
           }
-        }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
       },
       "delete": {
         "tags": [
@@ -82,8 +88,16 @@
         "responses": {
           "200": {
             "description": "Removido (sin cuerpo)"
+          },
+          "403": {
+            "description": "Sin token o token inválido"
           }
-        }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
       }
     },
     "/api/user/cart": {
@@ -111,14 +125,25 @@
           "400": {
             "description": "Cantidad menor a 1 o producto inexistente",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "error": "Quantity must be at least 1"
                 }
               }
             }
+          },
+          "403": {
+            "description": "Sin token o token inválido"
           }
-        }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
       },
       "delete": {
         "tags": [
@@ -139,8 +164,16 @@
         "responses": {
           "200": {
             "description": "Removido (sin cuerpo)"
+          },
+          "403": {
+            "description": "Sin token o token inválido"
           }
-        }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
       }
     },
     "/api/auth/register": {
@@ -165,7 +198,7 @@
           "200": {
             "description": "Usuario registrado",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/TokenResponse"
                 }
@@ -175,9 +208,12 @@
           "400": {
             "description": "Correo ya registrado o campos inválidos",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "error": "Email already registered"
                 }
               }
             }
@@ -204,22 +240,25 @@
           "required": true
         },
         "responses": {
-          "200": {
-            "description": "Login exitoso",
+          "400": {
+            "description": "Credenciales inválidas",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/TokenResponse"
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "error": "Invalid credentials"
                 }
               }
             }
           },
-          "400": {
-            "description": "Credenciales inválidas",
+          "200": {
+            "description": "Login exitoso",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
+                  "$ref": "#/components/schemas/TokenResponse"
                 }
               }
             }
@@ -248,22 +287,25 @@
           }
         ],
         "responses": {
-          "400": {
-            "description": "El producto no existe",
+          "200": {
+            "description": "Producto encontrado",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
+                  "$ref": "#/components/schemas/ProductResponse"
                 }
               }
             }
           },
-          "200": {
-            "description": "Producto encontrado",
+          "400": {
+            "description": "El producto no existe",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ProductResponse"
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "error": "Product not found: 99"
                 }
               }
             }
@@ -327,7 +369,7 @@
           "200": {
             "description": "Lista de productos que cumplen los filtros",
             "content": {
-              "*/*": {
+              "application/json": {
                 "schema": {
                   "type": "array",
                   "items": {
@@ -362,8 +404,7 @@
         "properties": {
           "error": {
             "type": "string",
-            "description": "Mensaje de error legible",
-            "example": "Product not found: 99"
+            "description": "Mensaje de error legible"
           }
         }
       },

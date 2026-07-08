@@ -4,6 +4,7 @@ import com.cs2031.techstore.auth.domain.AuthService;
 import com.cs2031.techstore.exception.ErrorResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -47,7 +48,9 @@ public class AuthController {
             description = "Crea una cuenta nueva y devuelve un token JWT listo para usar.")
     @ApiResponse(responseCode = "200", description = "Usuario registrado")
     @ApiResponse(responseCode = "400", description = "Correo ya registrado o campos inválidos",
-            content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+            content = @Content(mediaType = "application/json",
+                    schema = @Schema(implementation = ErrorResponse.class),
+                    examples = @ExampleObject(value = "{\"error\": \"Email already registered\"}")))
     @PostMapping("/register")
     public ResponseEntity<TokenResponse> register(@Valid @RequestBody RegisterRequest req) {
         String token = authService.register(req.email(), req.password(), req.name());
@@ -58,7 +61,9 @@ public class AuthController {
             description = "Valida las credenciales y devuelve un token JWT.")
     @ApiResponse(responseCode = "200", description = "Login exitoso")
     @ApiResponse(responseCode = "400", description = "Credenciales inválidas",
-            content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+            content = @Content(mediaType = "application/json",
+                    schema = @Schema(implementation = ErrorResponse.class),
+                    examples = @ExampleObject(value = "{\"error\": \"Invalid credentials\"}")))
     @PostMapping("/login")
     public ResponseEntity<TokenResponse> login(@Valid @RequestBody LoginRequest req) {
         String token = authService.login(req.email(), req.password());

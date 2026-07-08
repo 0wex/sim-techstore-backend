@@ -6,6 +6,7 @@ import com.cs2031.techstore.product.domain.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -55,7 +56,9 @@ public class ProductController {
     @Operation(summary = "Detalle de un producto")
     @ApiResponse(responseCode = "200", description = "Producto encontrado")
     @ApiResponse(responseCode = "400", description = "El producto no existe",
-            content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+            content = @Content(mediaType = "application/json",
+                    schema = @Schema(implementation = ErrorResponse.class),
+                    examples = @ExampleObject(value = "{\"error\": \"Product not found: 99\"}")))
     @GetMapping("/{id}")
     public ResponseEntity<ProductResponse> getById(
             @Parameter(description = "ID del producto", example = "1") @PathVariable Long id) {
